@@ -2,7 +2,7 @@
     <arg name="config_path" default = "$(find feature_tracker)/../config/euroc/loop.yaml" />
 	  <arg name="vins_path" default = "$(find feature_tracker)/../config/../" />
 
-    <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find plvins_estimator)/../config/vins_rviz_config.rviz" />
+    <!-- <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find plvins_estimator)/../config/vins_rviz_config.rviz" /> -->
 
     <node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log">
         <param name="config_file" type="string" value="$(arg config_path)" />
