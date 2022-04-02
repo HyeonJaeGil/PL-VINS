@@ -27,7 +27,7 @@ find_package(Eigen3  REQUIRED)
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
-  /home/hj/plvins_ws/src/PL-VINS/feature_tracker/src/line_descriptor/include # find LSD 
+  /root/catkin_ws/src/PL-VINS/feature_tracker/src/line_descriptor/include # find LSD 
 ) 
 
 add_executable(feature_tracker
@@ -59,5 +59,5 @@ target_link_libraries(LineFeature_tracker
     ${catkin_LIBRARIES} 
     ${OpenCV_LIBS}
     # /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so
-    /home/hj/plvins_ws/src/PL-VINS/feature_tracker/src/line_descriptor/lib/liblinedesc.so  # line feature
+    /root/catkin_ws/src/PL-VINS/feature_tracker/src/line_descriptor/lib/liblinedesc.so  # line feature
 )
