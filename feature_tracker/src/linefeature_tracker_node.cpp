@@ -54,11 +54,11 @@ void img_callback(const sensor_msgs::ImageConstPtr &img_msg)
     {
         cv_bridge::CvImageConstPtr ptr = cv_bridge::toCvCopy(img_msg, sensor_msgs::image_encodings::MONO8);
         cv::Mat show_img = ptr->image;
-       cv::imshow("lineimg",show_img);
-       cv::waitKey(1);
-    
-    frame_cnt++;
-    trackerData.readImage(ptr->image.rowRange(0 , ROW));   // rowRange(i,j) 取图像的i～j行
+        // cv::imshow("lineimg",show_img);
+        // cv::waitKey(1);
+        
+        frame_cnt++;
+        trackerData.readImage(ptr->image.rowRange(0 , ROW));   // rowRange(i,j) 取图像的i～j行
 
         pub_count++;
         sensor_msgs::PointCloudPtr feature_lines(new sensor_msgs::PointCloud);
@@ -76,7 +76,7 @@ void img_callback(const sensor_msgs::ImageConstPtr &img_msg)
             {
                 auto un_lines = trackerData.undistortedLineEndPoints();
 
-                //auto &cur_lines = trackerData.curframe_->vecLine;
+                auto &cur_lines = trackerData.curframe_->vecLine;
                 auto &ids = trackerData.curframe_->lineID;
 
                 for (unsigned int j = 0; j < ids.size(); j++)
@@ -95,10 +95,19 @@ void img_callback(const sensor_msgs::ImageConstPtr &img_msg)
                     u_of_endpoint.values.push_back(un_lines[j].EndPt.x);
                     v_of_endpoint.values.push_back(un_lines[j].EndPt.y);
                     //ROS_ASSERT(inBorder(cur_pts[j]));
+
+                    cv::Point startPoint = cv::Point(cur_lines[j].StartPt.x, cur_lines[j].StartPt.y);
+                    cv::Point endPoint = cv::Point(cur_lines[j].EndPt.x, cur_lines[j].EndPt.y);
+                    cv::line(show_img, startPoint, endPoint, cv::Scalar(255, 0, 0),2 ,8);
                 }
             }
 
         }
+        // cv::imshow("lineimg",show_img);
+        // cv::waitKey(1);
+        sensor_msgs::ImagePtr output_msg = cv_bridge::CvImage(std_msgs::Header(), "mono8", show_img).toImageMsg();
+        pub_match.publish(output_msg);
+
         feature_lines->channels.push_back(id_of_line);
         feature_lines->channels.push_back(u_of_endpoint);
         feature_lines->channels.push_back(v_of_endpoint);
