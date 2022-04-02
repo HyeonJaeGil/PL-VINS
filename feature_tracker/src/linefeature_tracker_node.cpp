@@ -49,12 +49,13 @@ void img_callback(const sensor_msgs::ImageConstPtr &img_msg)
 
     TicToc t_r;
 
-    if (PUB_THIS_FRAME)
+    // if (PUB_THIS_FRAME)
+    if (1)
     {
-    cv_bridge::CvImageConstPtr ptr = cv_bridge::toCvCopy(img_msg, sensor_msgs::image_encodings::MONO8);
-    cv::Mat show_img = ptr->image;
-//    cv::imshow("lineimg",show_img);
-//    cv::waitKey(1);
+        cv_bridge::CvImageConstPtr ptr = cv_bridge::toCvCopy(img_msg, sensor_msgs::image_encodings::MONO8);
+        cv::Mat show_img = ptr->image;
+       cv::imshow("lineimg",show_img);
+       cv::waitKey(1);
     
     frame_cnt++;
     trackerData.readImage(ptr->image.rowRange(0 , ROW));   // rowRange(i,j) 取图像的i～j行
