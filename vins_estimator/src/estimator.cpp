@@ -187,7 +187,7 @@ void Estimator::processImage(const map<int, vector<pair<int, Eigen::Matrix<doubl
     else
     {
         TicToc t_solve;
-        solveOdometry();      // 三角化新特征 并 swf优化
+        solveOdometry();      // Triangulate new features and optimize swf
         ROS_DEBUG("solver costs: %fms", t_solve.toc());
 
         if (failureDetection())
@@ -794,7 +794,7 @@ void Estimator::solveOdometry()
 
         // optimization();
 
-        onlyLineOpt();   // 三角化以后，优化一把
+        onlyLineOpt();   // After triangulation, optimize a
         optimizationwithLine();
 
 #ifdef LINEINCAM
@@ -1110,38 +1110,42 @@ bool Estimator::failureDetection()
 
 void  Estimator::onlyLineOpt()
 {
-    //固定pose， 只优化line的参数，用来调试line的一些参数，看ba优化出来的最好line地图是啥样
+    //Fixed pose, only optimizes the parameters of the line, used to debug some parameters of the line, see what the best line map optimized by ba is
     ceres::Problem problem;
     ceres::LossFunction *loss_function;
     loss_function = new ceres::CauchyLoss(1.0);
-    for (int i = 0; i < WINDOW_SIZE + 1; i++)    // 将窗口内的 p,q 加入优化变量
+    for (int i = 0; i < WINDOW_SIZE + 1; i++)    // Add p,q in the window to the optimization variables
     {
         ceres::LocalParameterization *local_parameterization = new PoseLocalParameterization();
         problem.AddParameterBlock(para_Pose[i], SIZE_POSE, local_parameterization);  // p,q
-        // 固定 pose
+        // fixed pose
         problem.SetParameterBlockConstant(para_Pose[i]);
     }
-    for (int i = 0; i < NUM_OF_CAM; i++)         // 外参数
+    for (int i = 0; i < NUM_OF_CAM; i++)         // extrinsic parameters
     {
         ceres::LocalParameterization *local_parameterization = new PoseLocalParameterization();
         problem.AddParameterBlock(para_Ex_Pose[i], SIZE_POSE, local_parameterization);
 
-        // 固定 外参数
+        // fixed extrinsic parameters
         problem.SetParameterBlockConstant(para_Ex_Pose[i]);
 
     }
-    vector2double();// 将那些保存在 vector向量里的参数 移到 double指针数组里去
+    vector2double();// Move the parameters stored in the vector vector to the array of double pointers
 
     // 所有特征
     int f_m_cnt = 0;
     int feature_index = -1;
     for (auto &it_per_id : f_manager.linefeature)
     {
-        it_per_id.used_num = it_per_id.linefeature_per_frame.size();                // 已经被多少帧观测到， 这个已经在三角化那个函数里说了
-        if (!(it_per_id.used_num >= LINE_MIN_OBS && it_per_id.start_frame < WINDOW_SIZE - 2 && it_per_id.is_triangulation))  // 如果这个特征才被观测到，那就跳过。实际上这里为啥不直接用如果特征没有三角化这个条件。
+        it_per_id.used_num = it_per_id.linefeature_per_frame.size();  // How many frames have been observed, this has been said in the triangulation function
+        
+        // If this feature is only observed, skip it.
+        // In fact, why not directly use the condition if the feature is not triangulated.
+        if (!(it_per_id.used_num >= LINE_MIN_OBS && it_per_id.start_frame < WINDOW_SIZE - 2 && it_per_id.is_triangulation))   
             continue;
 
-        ++feature_index;            // 这个变量会记录feature在 para_Feature 里的位置， 将深度存入para_Feature时索引的记录也是用的这种方式
+        ++feature_index;            // This variable will record the position of the feature in the para_Feature, 
+                                    // and the record of the index when the depth is stored in the para_Feature is also used in this way
         /*
         std::cout << para_LineFeature[feature_index][0] <<" "
                 << para_LineFeature[feature_index][1] <<" "
@@ -1159,8 +1163,8 @@ void  Estimator::onlyLineOpt()
             {
                 //continue;
             }
-            Vector4d obs = it_per_frame.lineobs;                          // 在第j帧图像上的观测
-            lineProjectionFactor *f = new lineProjectionFactor(obs);     // 特征重投影误差
+            Vector4d obs = it_per_frame.lineobs;                            // Observation on the jth frame image
+            lineProjectionFactor *f = new lineProjectionFactor(obs);        // Feature Reprojection Error
             problem.AddResidualBlock(f, loss_function,
                                      para_Pose[imu_j],
                                      para_Ex_Pose[0],

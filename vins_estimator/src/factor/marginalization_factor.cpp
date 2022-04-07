@@ -178,8 +178,10 @@ void MarginalizationInfo::marginalize()
 {
     int pos = 0;
     int marg_pose_size = 0;
-    std::map<int, int, std::greater<int> > marg_pose_index_size; // 记住需要 marg 掉的 pose 的 index;
-    for (auto &it : parameter_block_idx)    // parameter_block_idx一开始只保存了marg掉的参数,  it.first: 参数地址
+    std::map<int, int, std::greater<int> > marg_pose_index_size; // Remember the index of the pose 
+                                                                 // that needs to be margged;
+    for (auto &it : parameter_block_idx)    // parameter_block_idx only saves the parameters 
+                                            // that are margined at the beginning, it.first: parameter address
     {
 
         if(localSize(parameter_block_size[it.first]) > 4)  // pose size is 6, velocity and bias size is 9
@@ -188,35 +190,40 @@ void MarginalizationInfo::marginalize()
             marg_pose_size += localSize(parameter_block_size[it.first]);
         }
         
-        it.second = pos;                    // parameter_block_idx 存好每个参数块 在Hessien矩阵A里的位置索引
+        it.second = pos;                    // parameter_block_idx store the position index 
+                                            // of each parameter block in the Hessien matrix A
         pos += localSize(parameter_block_size[it.first]);
     }
 
-    m = pos;   // 要marg掉的参数维数， 包括marg掉的帧 + marg掉的特征
+    m = pos;   // The dimension of the parameter to be margined, 
+               // including the frame that is margined + the feature that is margined
 
-    for (const auto &it : parameter_block_size)    //遍历所有的参数块
+    for (const auto &it : parameter_block_size)    // iterate over all parameter blocks
     {
-        // 之前 parameter_block_idx 里只存着 marg 掉的参数在hessian里的索引
-        if (parameter_block_idx.find(it.first) == parameter_block_idx.end())   // 如果这些参数没有添加进parameter_block_idx，把他们也添加进去
+        // Previously, parameter_block_idx only stored the index of the parameter in the hessian that the marg dropped.
+        if (parameter_block_idx.find(it.first) == parameter_block_idx.end())   // If these parameters are not added to
+                                                                                //parameter_block_idx，Add them, too.
         {
-            parameter_block_idx[it.first] = pos;      // 存好每个参数块 在Hessien矩阵A里的位置索引
+            parameter_block_idx[it.first] = pos;      // Save the position index of each parameter block in the Hessien matrix A
+
             pos += localSize(it.second);
         }
     }
 
-    n = pos - m;   // n 非marg参数的维数, 这个主要是其他关键帧,以及外参数的维度
+    n = pos - m;    // n dimension of non-marg parameters, 
+                    // this is mainly the other keyframes, and the dimension of the external parameters
 
     ROS_INFO("marginalization, pos: %d, m: %d, n: %d, size: %d", pos, m, n, (int)parameter_block_idx.size());
 
     TicToc t_summing;
-    Eigen::MatrixXd A(pos, pos);   // Hessien矩阵的维度
+    Eigen::MatrixXd A(pos, pos);   // Dimensions of the Hessien matrix
     Eigen::VectorXd b(pos);
     A.setZero();
     b.setZero();
 
     /*
 
-    // 遍历 和 marg pose 有关的所有 factor
+    // traverse sum marg pose All relevant factor
     for (auto it : factors)
     {
         // it->parameter_blocks： 和这个factor有关的所有参数块

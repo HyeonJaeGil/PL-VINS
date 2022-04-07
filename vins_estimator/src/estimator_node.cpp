@@ -259,7 +259,7 @@ void process()
         for (auto &measurement : measurements)
         {
             for (auto &imu_msg : measurement.first)
-                send_imu(imu_msg);                     // 处理imu数据, 预测 pose
+                send_imu(imu_msg);                     // Process imu data, predict pose
 
             // set relocalization frame
             sensor_msgs::PointCloudConstPtr relo_msg = NULL;
@@ -302,7 +302,7 @@ void process()
             {
                 int v = img_msg->channels[0].values[i] + 0.5;
                 int feature_id = v / NUM_OF_CAM;
-                int camera_id = v % NUM_OF_CAM;        // 被几号相机观测到的，如果是单目，camera_id = 0
+                int camera_id = v % NUM_OF_CAM;        // Observed by several cameras, if it is monocular, camera_id = 0
                 double x = img_msg->points[i].x;
                 double y = img_msg->points[i].y;
                 double z = img_msg->points[i].z;
@@ -346,9 +346,8 @@ void process()
 //                ROS_ASSERT(z == 1);
                 lines[feature_id].emplace_back(camera_id, Vector4d(x_startpoint, y_startpoint, x_endpoint, y_endpoint));
             }
-            // estimator.processImage(image,lines, img_msg->header);   // 处理image数据，这时候的image已经是特征点数据，不是原始图像了。
-            estimator.processImage(image2,lines, img_msg->header);   // 处理image数据，这时候的image已经是特征点数据，不是原始图像了。
-
+            // estimator.processImage(image,lines, img_msg->header);   // Process image data. At this time, the image is already feature point data, not the original image.
+            estimator.processImage(image2,lines, img_msg->header);   // Process image data. At this time, the image is already feature point data, not the original image/
             double whole_t = t_s.toc();
             printStatistics(estimator, whole_t);
             std_msgs::Header header = img_msg->header;
