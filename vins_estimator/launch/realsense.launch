@@ -1,15 +1,15 @@
 <launch>
-    <arg name="config_path" default = "$(find feature_tracker)/../config/realsense/realsense_infra1_config.yaml" />
-	  <arg name="vins_path" default = "$(find feature_tracker)/../config/../" />
+    <arg name="config_path" default = "$(find plvins_feature_tracker)/../config/realsense/realsense_infra1_config.yaml" />
+	  <arg name="vins_path" default = "$(find plvins_feature_tracker)/../config/../" />
 
     <!-- <node name="rvizvisualisation" pkg="rviz" type="rviz" output="log" args="-d $(find plvins_estimator)/../config/vins_rviz_config.rviz" /> -->
 
-    <node name="feature_tracker" pkg="feature_tracker" type="feature_tracker" output="log">
+    <node name="plvins_feature_tracker" pkg="plvins_feature_tracker" type="plvins_feature_tracker" output="log">
         <param name="config_file" type="string" value="$(arg config_path)" />
         <param name="vins_folder" type="string" value="$(arg vins_path)" />
     </node>
 
-    <node name="linefeature_tracker" pkg="feature_tracker" type="LineFeature_tracker" output="log">
+    <node name="plvins_linefeature_tracker" pkg="plvins_feature_tracker" type="plvins_linefeature_tracker" output="log">
         <param name="config_file" type="string" value="$(arg config_path)" />
         <param name="vins_folder" type="string" value="$(arg vins_path)" />
     </node>    
@@ -19,7 +19,7 @@
        <param name="vins_folder" type="string" value="$(arg vins_path)" />
     </node>
 
-    <node name="pose_graph" pkg="pose_graph" type="pose_graph" output="screen">
+    <node name="plvins_pose_graph" pkg="plvins_pose_graph" type="plvins_pose_graph" output="screen">
         <param name="config_file" type="string" value="$(arg config_path)" />
         <param name="visualization_shift_x" type="int" value="0" />
         <param name="visualization_shift_y" type="int" value="0" />
