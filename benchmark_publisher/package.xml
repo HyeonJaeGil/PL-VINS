@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>benchmark_publisher</name>
+  <name>plvins_benchmark_publisher</name>
   <version>0.0.0</version>
-  <description>The benchmark_publisher package</description>
+  <description>The plvins_benchmark_publisher package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag --> 
   <!-- Example:  -->

@@ -17,7 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
  sensor_msgs
  cv_bridge
  image_transport
- camera_model
+ plvins_camera_model
 )
 
 find_package(OpenCV REQUIRED)

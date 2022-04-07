@@ -13,7 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
     nav_msgs
     tf
     cv_bridge
-    camera_model
+    plvins_camera_model
     )
 
 find_package(OpenCV REQUIRED)
@@ -68,12 +68,12 @@ LIST(APPEND SOURCEFILES
         src/factor/line_projection_factor.cpp
 
 )
-ADD_LIBRARY(vinsEstimatorLib SHARED ${SOURCEFILES})
-TARGET_LINK_LIBRARIES(vinsEstimatorLib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${CERES_LIBRARIES})
+ADD_LIBRARY(plvinsEstimatorLib SHARED ${SOURCEFILES})
+TARGET_LINK_LIBRARIES(plvinsEstimatorLib ${catkin_LIBRARIES} ${OpenCV_LIBS} ${CERES_LIBRARIES})
 
 add_executable(plvins_estimator
         src/estimator_node.cpp
         src/estimator.cpp
         )
-target_link_libraries(plvins_estimator vinsEstimatorLib)
+target_link_libraries(plvins_estimator plvinsEstimatorLib)
 

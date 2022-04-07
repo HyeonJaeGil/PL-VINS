@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(feature_tracker)
+project(plvins_feature_tracker)
 
 set(CMAKE_BUILD_TYPE "Release")
 set(CMAKE_CXX_FLAGS "-std=c++11")
@@ -10,7 +10,7 @@ find_package(catkin REQUIRED COMPONENTS
     std_msgs
     sensor_msgs
     cv_bridge
-    camera_model
+    plvins_camera_model
     message_filters
     )
 # Set(OpenCV_DIR "/usr/lib/x86_64-linux-gnu") # important find opencv version
@@ -27,19 +27,20 @@ find_package(Eigen3  REQUIRED)
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
-  /root/catkin_ws/src/PL-VINS/feature_tracker/src/line_descriptor/include # find LSD 
+#   /root/catkin_ws/src/PL-VINS/feature_tracker/src/line_descriptor/include # find LSD 
+  /home/hj/plvins_ws/src/PL-VINS/feature_tracker/src/line_descriptor/include # find LSD 
 ) 
 
-add_executable(feature_tracker
+add_executable(plvins_feature_tracker
     src/feature_tracker_node.cpp
     src/parameters.cpp
     src/feature_tracker.cpp
     )
 
-target_link_libraries(feature_tracker ${catkin_LIBRARIES} ${OpenCV_LIBS})
+target_link_libraries(plvins_feature_tracker ${catkin_LIBRARIES} ${OpenCV_LIBS})
 
 # line detect and match
-add_executable(LineFeature_tracker    
+add_executable(plvins_linefeature_tracker    
     src/linefeature_tracker_node.cpp
     src/parameters.cpp
     src/linefeature_tracker.cpp
@@ -55,9 +56,10 @@ add_executable(LineFeature_tracker
     src/line_descriptor/src/types_custom.hpp
 )
 # /home/healer/PL-VINS/PLVINS/PL-VINS/feature_tracker
-target_link_libraries(LineFeature_tracker 
+target_link_libraries(plvins_linefeature_tracker 
     ${catkin_LIBRARIES} 
     ${OpenCV_LIBS}
     # /usr/lib/x86_64-linux-gnu/libopencv_imgproc.so
-    /root/catkin_ws/src/PL-VINS/feature_tracker/src/line_descriptor/lib/liblinedesc.so  # line feature
+    # /root/catkin_ws/src/PL-VINS/feature_tracker/src/line_descriptor/lib/liblinedesc.so  # line feature
+    /home/hj/plvins_ws/src/PL-VINS/feature_tracker/src/line_descriptor/lib/liblinedesc.so  # line feature
 )
